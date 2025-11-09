@@ -26,6 +26,17 @@ async function run() {
 
     await client.connect();
 
+
+const db =client.db("homeNestDB")
+const propertyCollection=db.collection("properties")
+
+
+// get all data in data base
+app.get("/allProperties",async(req,res)=>{
+    const result = await propertyCollection.find().toArray()
+    res.send(result)
+})
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
