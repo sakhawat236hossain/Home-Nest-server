@@ -3,14 +3,15 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb'); 
 const app = express();
 const port = 8000;
-
+require('dotenv').config();
 // Middleware
 app.use(cors());
 app.use(express.json()); 
 
 
 
-const uri = "mongodb+srv://home-nest:aIwwBkRBO5x7M1Is@cluster0.kwvqtmc.mongodb.net/?appName=Cluster0";
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.kwvqtmc.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
