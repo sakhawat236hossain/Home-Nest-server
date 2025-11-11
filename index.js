@@ -24,6 +24,7 @@ async function run() {
 
     const db = client.db("homeNestDB");
     const propertyCollection = db.collection("properties");
+    const ratingsCollection = db.collection("ratings");
 
     // get all data in data base
     app.get("/allProperties", async (req, res) => {
@@ -47,7 +48,7 @@ async function run() {
     app.get("/latestProperty", async (req, res) => {
       const result = await propertyCollection
         .find()
-        .sort({ createdAt: "asc" })
+        .sort({ price: "desc" })
         .limit(8)
         .toArray();
       res.send(result);
@@ -56,7 +57,6 @@ async function run() {
     // add property
     app.post("/addProperty", async (req, res) => {
       const property = req.body;
-
       const result = await propertyCollection.insertOne(property);
       res.send(result);
     });
@@ -95,6 +95,15 @@ async function run() {
       const result=await propertyCollection.find({propertyName:{$regex:search_text,$options:"i"}}).toArray()
       res.send(result)
     })
+
+//add rating in data base
+ app.post("/addPropertyRating", async (req, res) => {
+const review = req.body;
+const result = await ratingsCollection.insertOne(review);
+ res.send(result);
+});
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
