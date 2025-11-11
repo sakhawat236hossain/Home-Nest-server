@@ -88,6 +88,13 @@ async function run() {
       const result= propertyCollection.updateOne(filter,updateProperty)
       res.send(result)
     })
+    
+    // search property
+    app.get("/searchProperty",async(req,res)=>{
+      const search_text=req.query.search
+      const result=await propertyCollection.find({propertyName:{$regex:search_text,$options:"i"}}).toArray()
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
