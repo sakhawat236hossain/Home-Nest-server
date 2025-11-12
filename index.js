@@ -96,12 +96,37 @@ async function run() {
       res.send(result)
     })
 
+
+
+
+
+// ratings routes-----------------and------------------reviews
+
+
 //add rating in data base
  app.post("/addPropertyRating", async (req, res) => {
 const review = req.body;
 const result = await ratingsCollection.insertOne(review);
  res.send(result);
 });
+
+   // get all Property Rating
+    app.get("/allPropertyRatings", async (req, res) => {
+      const result = await ratingsCollection
+        .find()
+        .sort({ created_at: -1 })
+        .toArray();
+      res.send(result);
+    });
+
+// delete property rating
+        app.delete("/deletePropertyRating/:id",async(req,res)=>{
+      const {id}=req.params
+      const result =await ratingsCollection.deleteOne({_id:new ObjectId(id)})
+      res.send(result)
+
+    })
+
 
 
 
