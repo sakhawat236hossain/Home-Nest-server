@@ -5,15 +5,7 @@ const app = express();
 const port = process.env.port || 8000;
 require("dotenv").config();
 // Middleware
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://home-nest-a10-b12.netlify.app" 
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-}));
-app.use(express.json());
+app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.kwvqtmc.mongodb.net/?appName=Cluster0`;
@@ -65,14 +57,42 @@ async function run() {
     const ratingsCollection = db.collection("ratings");
         const usersCollection = db.collection("users");
         const bookingCollection = db.collection("bookings");
+        const contactCollection = db.collection("contactMessages");
 
 
+// contact message
+app.post("/contact", async (req, res) => {
+  try {
+    const messageData = req.body;
+    messageData.submittedAt = new Date();
+    
+    const result = await contactCollection.insertOne(messageData);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to send message" });
+  }
+});
 
+// get all messages
+
+app.get("/messages", async (req, res) => {
+    const result = await contactCollection.find().sort({ submittedAt: -1 }).toArray();
+    res.send(result);
+});
+
+
+// delete message
+app.delete("/messages/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await contactCollection.deleteOne(query);
+  res.send(result);
+});
         // user upsert
             // POST User
         app.post("/users", async (req, res) => {
             const userData = req.body;
-            userData.role = "user";
+            userData.role = "buyer";
             userData.createdAt = new Date();
             const email = userData.email;
             const existingUser = await usersCollection.findOne({ email: email });
